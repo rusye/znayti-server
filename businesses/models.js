@@ -62,7 +62,8 @@ const statesArray = ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DC", "DE", "FL",
 const BusinessSchema = mongoose.Schema({
   user: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
   name: {type: String, required: true},
-  category: {type: String, required: true},
+  // categoryName: {type: String, required: true},
+  categoryName: {type: mongoose.Schema.Types.ObjectId, ref: 'Category'},
   // category: [CategorySchema],
   // address: {type: mongoose.Schema.Types.ObjectId, ref: 'Address'},
   address: {
@@ -91,7 +92,7 @@ BusinessSchema.methods.serialize = function () {
     id: this._id,
     user: this.user,
     name: this.name,
-    category: this.category,
+    categoryName: this.categoryName,
     address: this.address,
     hours: this.hours,
     tel: this.tel
