@@ -9,7 +9,8 @@ const CategorySchema = mongoose.Schema({
 
 CategorySchema.methods.serialize = function () {
   return {
-    name: this.name || ''
+    name: this.name || '',
+    id: this._id
   };
 };
 
