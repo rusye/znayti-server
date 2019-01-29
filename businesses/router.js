@@ -13,7 +13,8 @@ const router = express.Router();
 // const jwtAuth = passport.authenticate('jwt', {session: false});
 
 // Do I need to import all of them?
-const {Category, Business, Hours, Address} = require('./models');
+const {Business} = require('./models');
+const {Category} = require('./categorySchema');
 const {User} = require('../users/models');
 
 
@@ -28,7 +29,6 @@ router.get('/', (req, res) => {
 // ---- Require jwtAuth later ----
 // POST request to create a new business
 router.post('/', (req, res) => {
-  console.log(req.body);
   const requiredFields = ['name', 'category', 'address', 'hours', 'tel'];
   requiredFields.forEach(field => {
     if (!(field in req.body)) {
@@ -51,18 +51,34 @@ router.post('/', (req, res) => {
             hours: req.body.hours,
             tel: req.body.tel
           })
-        //   .then(post => {
-        //     user.posts.push(post._id);
-        //     user.save();
-        //     res.status(201).json({
-        //       id: post.id,
-        //       user: user.username,
-        //       hikename: post.hikename,
-        //       openseats: post.openseats,
-        //       content: post.content,
-        //       date: post.date
-        //     })
-        //   })
+          .then(business => {
+            Category.update(
+              { $push: { category: business.category } }
+            );
+            // I'm not sure if the above works correctly
+            // Basically I need to check if that "Category first exists"
+            // If it doesn't, it will create a new document
+            // Then it will push the business.id to the new document
+            // Would it be something like
+            // Category .find(business.category).then(category => {
+              // if(category) {
+                // category.category.push(business._id)
+              // } else {
+                // Category.create({category: business.category}).then(category => {
+                  // category.category.push(business._id)
+                // })
+              // }
+            // })
+            business.save();
+            res.status(201).json({
+              id: business.id,
+              name: business.name,
+              category: business.category,
+              address: business.address,
+              hours: business.hours,
+              tel: business.tel
+            })
+          })
           .catch(err => {
             console.error(err);
             res.status(500).json({message: 'Something went wrong'});

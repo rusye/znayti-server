@@ -62,7 +62,7 @@ const statesArray = ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DC", "DE", "FL",
 const BusinessSchema = mongoose.Schema({
   user: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
   name: {type: String, required: true},
-  category: {type: mongoose.Schema.Types.ObjectId, ref: 'Category'},
+  category: {type: String, required: true},
   // category: [CategorySchema],
   // address: {type: mongoose.Schema.Types.ObjectId, ref: 'Address'},
   address: {
