@@ -1,6 +1,5 @@
 'use strict';
-const {Business} = require('./models');
-const {Category} = require('./categorySchema');
+const {Category} = require('./models');
 const {router} = require('./router');
 
-module.exports = {Category, Business, router};
+module.exports = {Category, router};
