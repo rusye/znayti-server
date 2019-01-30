@@ -28,6 +28,23 @@ router.get('/', (req, res) => {
 });
 
 
+// GET request for specific category
+router.get('/:id', (req, res) => {
+  Category.findById(req.params.id)
+    .populate('business')
+    .then(category => {
+      res.json({
+        name: category.name,
+        business: category.business
+      })
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({message: 'Internal server error'})
+    });
+});
+
+
 // ---- Require jwtAuth later ----
 // POST request to create a new business
 router.post('/', (req, res) => {
