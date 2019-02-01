@@ -46,7 +46,7 @@ router.get('/:id', (req, res) => {
 
 
 // ---- Require jwtAuth later ----
-// POST request to create a new business
+// POST request to create a new category
 router.post('/', (req, res) => {
   if (!('name' in req.body)) {
     const message = `Missing name in request body`;
@@ -88,7 +88,7 @@ router.post('/', (req, res) => {
 
 
 // ---- Require jwtAuth later ----
-// PUT request to update a business
+// PUT request to update a category
 router.put('/:id', (req, res) => {
   if (!(req.params.id && req.body.id && req.params.id === req.body.id)) {
     res.status(400).json({message: `ID's do not match`});
@@ -104,7 +104,7 @@ router.put('/:id', (req, res) => {
 
   Category
     .findByIdAndUpdate(req.params.id, {$set: toUpdate}, {new: true})
-    .then(updatedPost => res.status(204).end())
+    .then(updatedCategory => res.status(204).end())
     .catch(err => res.status(500).json({message: 'Something went wrong'}));
 });
 
@@ -114,7 +114,7 @@ router.put('/:id', (req, res) => {
 router.delete('/:id', (req, res) => {
   Category
     .findByIdAndRemove(req.params.id)
-    .then(post => res.status(204).end())
+    .then(category => res.status(204).end())
     .catch(err => res.status(500).json({message: "Internal server error"}));
 });
 
