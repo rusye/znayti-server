@@ -161,13 +161,13 @@ router.put('/:id', (req, res) => {
           }
         )
         .then(updatedPost => res.status(204).end())
-        .catch(err => res.status(500).json({message: err}))
+        .catch(err => res.status(500).json({message: err.message}))
       )
   } else {
     Business
       .findByIdAndUpdate(req.params.id, {$set: theUpdate}, {new: true, runValidators: true})
       .then(updatedPost => res.status(204).end())
-      .catch(err => res.status(500).json({message: err}));
+      .catch(err => res.status(500).json({message: err.message}));
   }
 })
 
