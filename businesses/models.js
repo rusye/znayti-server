@@ -5,6 +5,32 @@ mongoose.Promise = global.Promise;
 
 const statesArray = ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DC", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"];
 
+let telephoneValidate = function(v, cb) {
+  setTimeout(function() {
+    let phoneRegex = /\d{3}-\d{3}-\d{4}/;
+    let msg = v + ' is not a valid phone number! Must be ###-###-####';
+    cb(phoneRegex.test(v), msg);
+  }, 5);
+}
+
+const hoursValidation = function(v, cb) {
+  setTimeout(function() {
+    let hoursRegex = /^(open)\s([01]?[0-9]|2[0-3]):([0-5][0-9])\s(close)\s([01]?[0-9]|2[0-3]):([0-5][0-9])|(closed)$/;
+    let msg = v + ' is not a valid hours format! Must be "open ##:## close ##:##" or "closed"';
+    cb(hoursRegex.test(v), msg);
+  }, 5)
+}
+
+const hoursLogic = {
+  type: String,
+  validate: {
+    isAsync: true,
+    validator: hoursValidation,
+    message: 'Default error message'
+  },
+  required: true
+};
+
 const BusinessSchema = mongoose.Schema({
   user: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
   name: {type: String, required: true},
@@ -19,28 +45,22 @@ const BusinessSchema = mongoose.Schema({
     zip: Number
   },
   hours: {
-    monday: {type: String, required: true},
-    tuesday: {type: String, required: true},
-    wednesday: {type: String, required: true},
-    thursday: {type: String, required: true},
-    friday: {type: String, required: true},
-    saturday: {type: String, required: true},
-    sunday: {type: String, required: true}
+    monday: hoursLogic,
+    tuesday: hoursLogic,
+    wednesday: hoursLogic,
+    thursday: hoursLogic,
+    friday: hoursLogic,
+    saturday: hoursLogic,
+    sunday: hoursLogic
   },
   tel: {
     type: String,
     validate: {
       isAsync: true,
-      validator: function(v, cb) {
-        setTimeout(function() {
-          var phoneRegex = /\d{3}-\d{3}-\d{4}/;
-          var msg = v + ' is not a valid phone number! Must be XXX-XXX-XXXX';
-          cb(phoneRegex.test(v), msg);
-        }, 5);
-      },
+      validator: telephoneValidate,
       message: 'Default error message'
     },
-    required: [true, 'User phone number required']
+    required: true
   }
 });
 
