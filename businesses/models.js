@@ -25,8 +25,23 @@ const BusinessSchema = mongoose.Schema({
     thursday: {type: String, required: true},
     friday: {type: String, required: true},
     saturday: {type: String, required: true},
-    sunday: {type: String, required: true}},
-  tel: {type: Number, required: true}
+    sunday: {type: String, required: true}
+  },
+  tel: {
+    type: String,
+    validate: {
+      isAsync: true,
+      validator: function(v, cb) {
+        setTimeout(function() {
+          var phoneRegex = /\d{3}-\d{3}-\d{4}/;
+          var msg = v + ' is not a valid phone number! Must be XXX-XXX-XXXX';
+          cb(phoneRegex.test(v), msg);
+        }, 5);
+      },
+      message: 'Default error message'
+    },
+    required: [true, 'User phone number required']
+  }
 });
 
 
