@@ -42,7 +42,7 @@ const BusinessSchema = mongoose.Schema({
       type: String,
       uppercase: true,
       enum: statesArray},
-    zip: Number
+    zip: String
   },
   hours: {
     monday: hoursLogic,
@@ -76,6 +76,14 @@ BusinessSchema.methods.serialize = function () {
     tel: this.tel
   };
 };
+
+BusinessSchema.post('remove',function(next) {
+  return this.model('Category').update(
+      { },
+      { "$pull": { "business": this._id } },
+      { "multi": true }
+  );
+})
 
 const Business = mongoose.model('Business', BusinessSchema);
 
