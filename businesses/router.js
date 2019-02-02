@@ -87,7 +87,7 @@ router.post('/', (req, res) => {
           })
           .catch(err => {
             console.error('im inside the error ' + err);
-            res.status(500).json({message: 'Something went wrong with the validation'});
+            res.status(500).json({message: err.message});
           });
       }
       else {
@@ -170,5 +170,16 @@ router.put('/:id', (req, res) => {
       .catch(err => res.status(500).json({message: err.message}));
   }
 })
+
+
+// ---- Require jwtAuth later ----
+// DELETE request to delete a business
+router.delete('/:id', (req, res) => {
+  Business
+    .findById(req.params.id)
+    .then(business => business.remove())
+    .then(business => res.status(204).end())
+    .catch(err => res.status(500).json({message: "Internal server error"}));
+});
 
 module.exports = {router};
