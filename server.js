@@ -7,7 +7,7 @@ const morgan = require('morgan');
 const passport = require('passport');
 
 const { router: usersRouter } = require('./users');
-const { router: authRouter, localStrategy, jwtStrategy } = require('./auth');
+const { router: authRouter, localStrategy, jwtStrategy, isAdmin } = require('./auth');
 const { router: catRouter } = require('./category');
 const { router: bussRouter } = require('./businesses');
 
@@ -43,7 +43,7 @@ app.use('/business/', bussRouter);
 const jwtAuth = passport.authenticate('jwt', { session: false });
 
 // A protected endpoint which needs a valid JWT to access it
-app.get('/api/protected', jwtAuth, (req, res) => {
+app.get('/api/protected', [jwtAuth, isAdmin], (req, res) => {
   return res.json({
     data: 'rosebud'
   });
