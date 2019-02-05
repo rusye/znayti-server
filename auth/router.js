@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 
 const config = require('../config');
 const router = express.Router();
+const { isAdmin } = require('./strategies');
 
 const createAuthToken = function(user) {
   return jwt.sign({user, "admin": user.admin}, config.JWT_SECRET, {
@@ -19,6 +20,13 @@ const localAuth = passport.authenticate('local', {session: false});
 router.use(bodyParser.json());
 // The user provides a username and password to login
 router.post('/login', localAuth, (req, res) => {
+  const user = req.user.serialize();
+  const authToken = createAuthToken(user);
+  res.json({authToken, user});
+});
+
+// The user provides a username and password to login
+router.post('/bigboss/login', [localAuth, isAdmin], (req, res) => {
   const user = req.user.serialize();
   const authToken = createAuthToken(user);
   res.json({authToken, user});
