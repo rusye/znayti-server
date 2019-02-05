@@ -1,4 +1,5 @@
 'use strict';
+
 const express = require('express');
 const bodyParser = require('body-parser');
 
@@ -8,7 +9,17 @@ const router = express.Router();
 
 const jsonParser = bodyParser.json();
 
+// ---- activate passport later ----
+// const passport = require('passport');
+
+// ---- require passport/authentication later ---- 
+// const {router: localStrategy, jwtStrategy} = require('../auth');
+// passport.use(localStrategy);
+// passport.use(jwtStrategy);
+// const jwtAuth = passport.authenticate('jwt', {session: false});
+
 // Post to register a new user
+// ---- Require jwtAuth + admin role later ----
 router.post('/', jsonParser, (req, res) => {
   const requiredFields = ['username', 'password'];
   const missingField = requiredFields.find(field => !(field in req.body));
