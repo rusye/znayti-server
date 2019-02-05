@@ -110,8 +110,8 @@ describe('Protected endpoint', function () {
             username,
             firstName,
             lastName,
-            admin
-          }, "admin": admin
+            "admin": true
+          }, "admin": true
         },
         JWT_SECRET,
         {
@@ -129,6 +129,35 @@ describe('Protected endpoint', function () {
           expect(res).to.have.status(200);
           expect(res.body).to.be.an('object');
           expect(res.body.data).to.equal('rosebud');
+        });
+    });
+    
+    it('Should deny access because admin is false', function () {
+      const token = jwt.sign(
+        {
+          user: {
+            username,
+            firstName,
+            lastName,
+            admin
+          }, "admin": admin
+        },
+        JWT_SECRET,
+        {
+          algorithm: 'HS256',
+          subject: username,
+          expiresIn: '7d'
+        }
+      );
+
+      return chai
+        .request(app)
+        .get('/api/protected')
+        .set('authorization', `Bearer ${token}`)
+        .then(res => {
+          expect(res).to.have.status(403);
+          expect(res.body).to.be.an('object');
+          expect(res.body.message).to.equal('Sorry.  Only admin can access this page.');
         });
     });
   });
