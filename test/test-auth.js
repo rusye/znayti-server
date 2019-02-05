@@ -20,6 +20,7 @@ describe('Auth endpoints', function () {
   const password = 'examplePass';
   const firstName = 'Example';
   const lastName = 'User';
+  const admin = false;
 
   before(function () {
     return runServer(TEST_DATABASE_URL);
@@ -35,7 +36,8 @@ describe('Auth endpoints', function () {
         username,
         password,
         firstName,
-        lastName
+        lastName,
+        admin
       })
     );
   });
@@ -49,57 +51,33 @@ describe('Auth endpoints', function () {
       return chai
         .request(app)
         .post('/api/auth/login')
-        .then(() =>
-          expect.fail(null, null, 'Request should not succeed')
-        )
-        .catch(err => {
-          if (err instanceof chai.AssertionError) {
-            throw err;
-          }
-
-          const res = err.response;
-          expect(res).to.have.status(400);
-        });
+        .then(res => 
+          expect(res).to.have.status(400));
     });
-    it('Should reject requests with incorrect usernames', function () {
+
+    it('Should reject requests with incorrect usernames', function() {
       return chai
         .request(app)
         .post('/api/auth/login')
-        .send({ username: 'wrongUsername', password })
-        .then(() =>
-          expect.fail(null, null, 'Request should not succeed')
-        )
-        .catch(err => {
-          if (err instanceof chai.AssertionError) {
-            throw err;
-          }
-
-          const res = err.response;
-          expect(res).to.have.status(401);
-        });
+        .send({username: 'wrongUsername', password})
+        .then(res =>
+          expect(res).to.have.status(401));
     });
-    it('Should reject requests with incorrect passwords', function () {
+
+    it('Should reject requests with incorrect passwords', function() {
       return chai
         .request(app)
         .post('/api/auth/login')
-        .send({ username, password: 'wrongPassword' })
-        .then(() =>
-          expect.fail(null, null, 'Request should not succeed')
-        )
-        .catch(err => {
-          if (err instanceof chai.AssertionError) {
-            throw err;
-          }
-
-          const res = err.response;
-          expect(res).to.have.status(401);
-        });
+        .send({username, password: 'wrongPassword'})
+        .then(res => 
+          expect(res).to.have.status(401));
     });
+
     it('Should return a valid auth token', function () {
       return chai
         .request(app)
         .post('/api/auth/login')
-        .send({ username, password })
+        .send({username, password})
         .then(res => {
           expect(res).to.have.status(200);
           expect(res.body).to.be.an('object');
@@ -109,37 +87,32 @@ describe('Auth endpoints', function () {
             algorithm: ['HS256']
           });
           expect(payload.user).to.deep.equal({
+            id: payload.user.id,
             username,
             firstName,
-            lastName
+            lastName,
+            admin
           });
         });
     });
   });
 
-  describe('/api/auth/refresh', function () {
-    it('Should reject requests with no credentials', function () {
+  describe('/api/auth/refresh', function() {
+    it('Should reject requests with no credentials', function() {
       return chai
         .request(app)
         .post('/api/auth/refresh')
-        .then(() =>
-          expect.fail(null, null, 'Request should not succeed')
-        )
-        .catch(err => {
-          if (err instanceof chai.AssertionError) {
-            throw err;
-          }
-
-          const res = err.response;
-          expect(res).to.have.status(401);
-        });
+        .then(res =>
+          expect(res).to.have.status(401));
     });
-    it('Should reject requests with an invalid token', function () {
+
+    it('Should reject requests with an invalid token', function() {
       const token = jwt.sign(
         {
           username,
           firstName,
-          lastName
+          lastName,
+          admin
         },
         'wrongSecret',
         {
@@ -152,27 +125,20 @@ describe('Auth endpoints', function () {
         .request(app)
         .post('/api/auth/refresh')
         .set('Authorization', `Bearer ${token}`)
-        .then(() =>
-          expect.fail(null, null, 'Request should not succeed')
-        )
-        .catch(err => {
-          if (err instanceof chai.AssertionError) {
-            throw err;
-          }
-
-          const res = err.response;
-          expect(res).to.have.status(401);
-        });
+        .then(res => 
+          expect(res).to.have.status(401));
     });
-    it('Should reject requests with an expired token', function () {
+
+    it('Should reject requests with an expired token', function() {
       const token = jwt.sign(
         {
           user: {
             username,
             firstName,
-            lastName
+            lastName,
+            admin
           },
-          exp: Math.floor(Date.now() / 1000) - 10 // Expired ten seconds ago
+          exp: Math.floor(Date.now() / 1000) - 10
         },
         JWT_SECRET,
         {
@@ -185,26 +151,19 @@ describe('Auth endpoints', function () {
         .request(app)
         .post('/api/auth/refresh')
         .set('authorization', `Bearer ${token}`)
-        .then(() =>
-          expect.fail(null, null, 'Request should not succeed')
-        )
-        .catch(err => {
-          if (err instanceof chai.AssertionError) {
-            throw err;
-          }
-
-          const res = err.response;
-          expect(res).to.have.status(401);
-        });
+        .then(res =>
+          expect(res).to.have.status(401));
     });
-    it('Should return a valid auth token with a newer expiry date', function () {
+
+    it('Should return a valid auth token with a newer expiry date', function() {
       const token = jwt.sign(
         {
           user: {
             username,
             firstName,
-            lastName
-          }
+            lastName,
+            admin
+          }, "admin": admin
         },
         JWT_SECRET,
         {
@@ -230,7 +189,8 @@ describe('Auth endpoints', function () {
           expect(payload.user).to.deep.equal({
             username,
             firstName,
-            lastName
+            lastName,
+            admin
           });
           expect(payload.exp).to.be.at.least(decoded.exp);
         });

@@ -20,6 +20,7 @@ describe('Protected endpoint', function () {
   const password = 'examplePass';
   const firstName = 'Example';
   const lastName = 'User';
+  const admin = false;
 
   before(function () {
     return runServer(TEST_DATABASE_URL);
@@ -45,29 +46,21 @@ describe('Protected endpoint', function () {
   });
 
   describe('/api/protected', function () {
-    it('Should reject requests with no credentials', function () {
+    it('Should reject requests with no credentials', function() {
       return chai
         .request(app)
         .get('/api/protected')
-        .then(() =>
-          expect.fail(null, null, 'Request should not succeed')
-        )
-        .catch(err => {
-          if (err instanceof chai.AssertionError) {
-            throw err;
-          }
-
-          const res = err.response;
-          expect(res).to.have.status(401);
-        });
+        .then(res =>
+          expect(res).to.have.status(401));
     });
 
-    it('Should reject requests with an invalid token', function () {
+    it('Should reject requests with an invalid token', function() {
       const token = jwt.sign(
         {
-          username,
-          firstName,
-          lastName
+          username, 
+          firstName, 
+          lastName,
+          admin
         },
         'wrongSecret',
         {
@@ -80,26 +73,19 @@ describe('Protected endpoint', function () {
         .request(app)
         .get('/api/protected')
         .set('Authorization', `Bearer ${token}`)
-        .then(() =>
-          expect.fail(null, null, 'Request should not succeed')
-        )
-        .catch(err => {
-          if (err instanceof chai.AssertionError) {
-            throw err;
-          }
-
-          const res = err.response;
-          expect(res).to.have.status(401);
-        });
+        .then(res => 
+          expect(res).to.have.status(401));
     });
+
     it('Should reject requests with an expired token', function () {
       const token = jwt.sign(
         {
           user: {
             username,
             firstName,
-            lastName
-          },
+            lastName,
+            admin
+          }, "admin": admin,
           exp: Math.floor(Date.now() / 1000) - 10 // Expired ten seconds ago
         },
         JWT_SECRET,
@@ -113,26 +99,19 @@ describe('Protected endpoint', function () {
         .request(app)
         .get('/api/protected')
         .set('authorization', `Bearer ${token}`)
-        .then(() =>
-          expect.fail(null, null, 'Request should not succeed')
-        )
-        .catch(err => {
-          if (err instanceof chai.AssertionError) {
-            throw err;
-          }
-
-          const res = err.response;
-          expect(res).to.have.status(401);
-        });
+        .then(res =>
+          expect(res).to.have.status(401));
     });
+
     it('Should send protected data', function () {
       const token = jwt.sign(
         {
           user: {
             username,
             firstName,
-            lastName
-          }
+            lastName,
+            admin
+          }, "admin": admin
         },
         JWT_SECRET,
         {
