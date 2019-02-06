@@ -13,7 +13,7 @@ const jsonParser = bodyParser.json();
 // const passport = require('passport');
 
 // ---- require passport/authentication later ---- 
-// const {router: localStrategy, jwtStrategy} = require('../auth');
+// const { router: localStrategy, jwtStrategy, isAdmin } = require('./auth');
 // passport.use(localStrategy);
 // passport.use(jwtStrategy);
 // const jwtAuth = passport.authenticate('jwt', {session: false});
