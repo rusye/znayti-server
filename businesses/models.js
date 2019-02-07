@@ -34,7 +34,7 @@ const hoursLogic = {
 const BusinessSchema = mongoose.Schema({
   user: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
   name: {type: String, required: true},
-  categoryID: {type: mongoose.Schema.Types.ObjectId, ref: 'Category'},
+  category: {type: mongoose.Schema.Types.ObjectId, ref: 'Category'},
   address: {
     street: String,
     city: String,
@@ -70,12 +70,20 @@ BusinessSchema.methods.serialize = function () {
     id: this._id,
     user: this.user,
     name: this.name,
-    categoryID: this.categoryID,
+    category: this.category,
     address: this.address,
     hours: this.hours,
     tel: this.tel
   };
 };
+
+BusinessSchema.pre('find', function() {
+  this.category.populate()
+})
+
+BusinessSchema.pre('findOne', function() {
+  this.category.populate()
+})
 
 BusinessSchema.post('remove',function(next) {
   return this.model('Category').update(
