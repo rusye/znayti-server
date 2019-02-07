@@ -1,4 +1,4 @@
-# Firmy
+# Firmy Server Side
 
 Firmy will help Russian speaking users locate Russian speaking businesses so that they will be able to communicate in a language that they understand easier
 
@@ -8,9 +8,9 @@ When ever I'm trying to find a business that can do the same job cheaper I somet
 
 ## Description
 
-You will be able to select the general area your searching for by zip code and it will return all businesses in that area.
+You will be able to select the general area your searching for by city name or zip code and it will return all businesses in that area.
 
-## Client Side
+## Client Side Code
 
 [Client Side Code](https://github.com/rusye/firmy-client)
 
