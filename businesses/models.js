@@ -85,14 +85,6 @@ BusinessSchema.pre('findOne', function() {
   this.category.populate()
 })
 
-BusinessSchema.post('remove',function(next) {
-  return this.model('Category').update(
-      { },
-      { "$pull": { "business": this._id } },
-      { "multi": true }
-  );
-})
-
 const Business = mongoose.model('Business', BusinessSchema);
 
 module.exports = {Business};
