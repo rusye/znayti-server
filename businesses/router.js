@@ -1,4 +1,7 @@
 'use strict';
+//----Go through and make sure there are no references to categoryID
+//----Also remove the populate for categories
+//----Remove any pushes to to categoryID for the business array stuff
 
 const express = require('express');
 const router = express.Router();
@@ -43,7 +46,7 @@ router.get('/:id', (req, res) => {
 // ---- Require jwtAuth later ----
 // POST request to create a new business
 router.post('/', (req, res) => {
-  const requiredFields = ['name', 'categoryID', 'address', 'hours', 'tel'];
+  const requiredFields = ['name', 'category', 'address', 'hours', 'tel'];
   requiredFields.forEach(field => {
     if (!(field in req.body)) {
       const message = `Missing \`${field}\` in request body`;
@@ -59,17 +62,14 @@ router.post('/', (req, res) => {
           .create({
             user: req.body.user_id,
             name: req.body.name,
-            categoryID: req.body.categoryID,
+            category: req.body.category,
             address: req.body.address,
             hours: req.body.hours,
             tel: req.body.tel
           })
           .then(business => {
-            Category.findById(business.categoryID).then(category => {
-              if(category) {
-                category.business.push(business._id)
-                category.save();
-              } else {
+            Category.findById(business.category).then(category => {
+              if(!(category)) {
                 const message = 'Category not found';
                 console.error(message);
                 return res.status(400).send(message);
@@ -79,7 +79,7 @@ router.post('/', (req, res) => {
             res.status(201).json({
               id: business.id,
               name: business.name,
-              categoryID: business.categoryID,
+              category: business.category,
               address: business.address,
               hours: business.hours,
               tel: business.tel
@@ -111,7 +111,7 @@ router.put('/:id', (req, res) => {
   }
 
   const toUpdate = {};
-  const updateableFields = ['user', 'name', 'categoryID', 'address', 'hours', 'tel'] 
+  const updateableFields = ['user', 'name', 'category', 'address', 'hours', 'tel'] 
   updateableFields.forEach(field => {
     if (field in req.body) {
       toUpdate[field] = req.body[field];
@@ -136,39 +136,10 @@ router.put('/:id', (req, res) => {
   const theUpdate = dotNotate(toUpdate)
 
   // If name change then also check that the business doesn't exist already
-  let oldCategoryID;
-  if('categoryID' in req.body) {
-    Business.findById(req.params.id)
-      .then(business => {
-        oldCategoryID = business.categoryID
-      })
-      .then(
-        Business
-        .findByIdAndUpdate(req.params.id, {$set: theUpdate}, {new: true, runValidators: true})
-        .then(business => {
-          Category.findById(business.categoryID)
-            .then(category => {
-              category.business.push(business._id)
-              category.save();
-          })
-        })
-        .then(category => {
-          Category.findById(oldCategoryID)
-            .then(category => {
-              category.business.pull(req.body.id)
-              category.save()
-            })
-          }
-        )
-        .then(updatedPost => res.status(204).end())
-        .catch(err => res.status(500).json({message: err.message}))
-      )
-  } else {
-    Business
-      .findByIdAndUpdate(req.params.id, {$set: theUpdate}, {new: true, runValidators: true})
-      .then(updatedPost => res.status(204).end())
-      .catch(err => res.status(500).json({message: err.message}));
-  }
+  Business
+    .findByIdAndUpdate(req.params.id, {$set: theUpdate}, {new: true, runValidators: true})
+    .then(updatedPost => res.status(204).end())
+    .catch(err => res.status(500).json({message: err.message}));
 })
 
 
