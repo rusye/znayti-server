@@ -23,7 +23,17 @@ const {User} = require('../users/models');
 // GET request for all business
 router.get('/', (req, res) => {
   Business.find()
-    .then(businesses => res.json(businesses.map(business => business.serialize())))
+    .then(businesses => {
+      res.json(businesses.map(business => {
+        return {
+          id: business._id,
+          name: business.name,
+          city: business.address.city,
+          state: business.address.state,
+          category: business.category.name
+        }
+      }))
+    })
     .catch(err => {
       console.log(err);
       res.status(500).json({message: 'Internal server error'})
