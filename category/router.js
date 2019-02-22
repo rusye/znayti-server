@@ -1,4 +1,5 @@
 'use strict';
+//----Update to make sure the right things are returning when I call a business category!
 
 const express = require('express');
 const router = express.Router();
@@ -13,13 +14,13 @@ const router = express.Router();
 // const jwtAuth = passport.authenticate('jwt', {session: false});
 
 const {Category} = require('./models');
+const {Business} = require('../businesses/models');
 const {User} = require('../users/models');
 
 
 // GET request for all categories
 router.get('/', (req, res) => {
   Category.find()
-    .populate('business')
     .then(categories => res.json(categories.map(category => category.serialize())))
     .catch(err => {
       console.log(err);
@@ -27,16 +28,19 @@ router.get('/', (req, res) => {
     });
 });
 
-
 // GET request for specific category
 router.get('/:id', (req, res) => {
-  Category.findById(req.params.id)
-    .populate('business')
-    .then(category => {
-      res.json({
-        name: category.name,
-        business: category.business
-      })
+  Business.find({category: req.params.id})
+    .then(businesses => {
+      res.json(businesses.map(business => {
+        return {
+          id: business._id,
+          name: business.name,
+          city: business.address.city,
+          state: business.address.state,
+          category: business.category.name
+        }
+      }))
     })
     .catch(err => {
       console.log(err);
