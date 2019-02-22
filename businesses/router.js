@@ -22,7 +22,7 @@ const {User} = require('../users/models');
 
 // GET request for all business
 router.get('/', (req, res) => {
-  Business.find()
+  Business.find().sort('name')
     .then(businesses => {
       let theBusinesses = businesses.map(business => {
         return {
@@ -44,15 +44,12 @@ router.get('/', (req, res) => {
       };
 
       const groupedByCategory = theBusinesses.groupBy('category')
-
-      let newArray = []
-      for (let [key, value] of Object.entries(groupedByCategory)) {
-        let newObj = {}
-        newObj[key] = value
-        newArray.push(newObj)
-      }
+      const ordered = {};
+      Object.keys(groupedByCategory).sort().forEach(function(key) {
+        ordered[key] = groupedByCategory[key];
+      });
       
-      res.json(newArray)
+      res.json(ordered)
     })
     .catch(err => {
       console.log(err);
