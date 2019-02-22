@@ -1,6 +1,5 @@
 'use strict';
 const mongoose = require('mongoose');
-// Add lat + long to schema
 
 mongoose.Promise = global.Promise;
 
@@ -46,13 +45,14 @@ const longitude = {
     isAsync: true,
     validator: longitudeValidation,
     message: 'Default error message'
-  }
+  },
+  required: true
 }
 
 let latitudeValidation = function(v, cb) {
   setTimeout(function() {
     let latitudeRegex = /^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?)$/;
-    let msg = v + ' is not a valid longitude! Must be between -90 and +90';
+    let msg = v + ' is not a valid latitude! Must be between -90 and +90';
     cb(latitudeRegex.test(v), msg);
   }, 5);
 }
@@ -63,6 +63,24 @@ const latitude = {
     isAsync: true,
     validator: latitudeValidation,
     message: 'Default error message'
+  },
+  required: true
+}
+
+let zipValidation = function(v, cb) {
+  setTimeout(function() {
+    let zipRegex = /^\d{5}(?:[-]\d{4})?$/;
+    let msg = v + ' is not a valid zip code! Must be in this format 12345 or 12345-1234';
+    cb(zipRegex.test(v), msg);
+  }, 5);
+}
+
+const zipCode = {
+  type: String,
+  validate: {
+    isAsync: true,
+    validator: zipValidation,
+    message: 'Default error message'
   }
 }
 
@@ -72,12 +90,13 @@ const BusinessSchema = mongoose.Schema({
   category: {type: mongoose.Schema.Types.ObjectId, ref: 'Category'},
   address: {
     street: String,
-    city: String,
+    city: {type: String, required: true},
     state: {
       type: String,
       uppercase: true,
-      enum: statesArray},
-    zip: String,
+      enum: statesArray,
+      required: true},
+    zip: zipCode,
     coordinates: [longitude, latitude]
   },
   hours: {
