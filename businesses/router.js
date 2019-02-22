@@ -24,7 +24,7 @@ const {User} = require('../users/models');
 router.get('/', (req, res) => {
   Business.find()
     .then(businesses => {
-      res.json(businesses.map(business => {
+      let theBusinesses = businesses.map(business => {
         return {
           id: business._id,
           name: business.name,
@@ -32,7 +32,27 @@ router.get('/', (req, res) => {
           state: business.address.state,
           category: business.category.name
         }
-      }))
+      })
+
+      Array.prototype.groupBy = function(prop) {
+        return this.reduce(function(groups, item) {
+          const val = item[prop]
+          groups[val] = groups[val] || []
+          groups[val].push(item)
+          return groups
+        }, {})
+      };
+
+      const groupedByCategory = theBusinesses.groupBy('category')
+
+      let newArray = []
+      for (let [key, value] of Object.entries(groupedByCategory)) {
+        let newObj = {}
+        newObj[key] = value
+        newArray.push(newObj)
+      }
+      
+      res.json(newArray)
     })
     .catch(err => {
       console.log(err);
