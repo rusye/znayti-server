@@ -32,6 +32,40 @@ const hoursLogic = {
   required: true
 };
 
+let longitudeValidation = function(v, cb) {
+  setTimeout(function() {
+    let longitudeRegex = /^[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$/;
+    let msg = v + ' is not a valid longitude! Must be between -180 and +180';
+    cb(longitudeRegex.test(v), msg);
+  }, 5);
+}
+
+const longitude = {
+  type: String,
+  validate: {
+    isAsync: true,
+    validator: longitudeValidation,
+    message: 'Default error message'
+  }
+}
+
+let latitudeValidation = function(v, cb) {
+  setTimeout(function() {
+    let latitudeRegex = /^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?)$/;
+    let msg = v + ' is not a valid longitude! Must be between -90 and +90';
+    cb(latitudeRegex.test(v), msg);
+  }, 5);
+}
+
+const latitude = {
+  type: String,
+  validate: {
+    isAsync: true,
+    validator: latitudeValidation,
+    message: 'Default error message'
+  }
+}
+
 const BusinessSchema = mongoose.Schema({
   user: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
   name: {type: String, required: true},
@@ -44,7 +78,7 @@ const BusinessSchema = mongoose.Schema({
       uppercase: true,
       enum: statesArray},
     zip: String,
-    coordinates: [String, String]
+    coordinates: [longitude, latitude]
   },
   hours: {
     monday: hoursLogic,
