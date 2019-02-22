@@ -1,5 +1,6 @@
 'use strict';
 const mongoose = require('mongoose');
+// Add lat + long to schema
 
 mongoose.Promise = global.Promise;
 
@@ -42,7 +43,8 @@ const BusinessSchema = mongoose.Schema({
       type: String,
       uppercase: true,
       enum: statesArray},
-    zip: String
+    zip: String,
+    coordinates: [String, String]
   },
   hours: {
     monday: hoursLogic,
@@ -78,11 +80,11 @@ BusinessSchema.methods.serialize = function () {
 };
 
 BusinessSchema.pre('find', function() {
-  this.category.populate()
+  this.populate('category')
 })
 
 BusinessSchema.pre('findOne', function() {
-  this.category.populate()
+  this.populate('category')
 })
 
 const Business = mongoose.model('Business', BusinessSchema);
