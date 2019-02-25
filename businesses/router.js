@@ -19,42 +19,65 @@ const {Business} = require('./models');
 const {Category} = require('../category/models');
 const {User} = require('../users/models');
 
-
+let catDict = {}
+let busDict
 // GET request for all business
 router.get('/', (req, res) => {
-  Business.find().sort('name')
-    .then(businesses => {
-      let theBusinesses = businesses.map(business => {
-        return {
-          id: business._id,
-          name: business.name,
-          city: business.address.city,
-          state: business.address.state,
-          category: business.category.name
-        }
-      })
-
-      Array.prototype.groupBy = function(prop) {
-        return this.reduce(function(groups, item) {
-          const val = item[prop]
-          groups[val] = groups[val] || []
-          groups[val].push(item)
-          return groups
-        }, {})
-      };
-
-      const groupedByCategory = theBusinesses.groupBy('category')
-      const ordered = {};
-      Object.keys(groupedByCategory).sort().forEach(function(key) {
-        ordered[key] = groupedByCategory[key];
-      });
-      
-      res.json(ordered)
+  Category.find().sort('name')
+  .then(categories => {
+    categories.forEach(category => {
+      catDict[category._id] = category.name
     })
-    .catch(err => {
-      console.log(err);
-      res.status(500).json({message: 'Internal server error'})
-    });
+    // require geo coordinates
+    return Business.find().sort('name')
+      .then(businesses => {
+        busDict = businesses.map(business => {
+          return {
+            id: business._id,
+            name: business.name,
+            city: business.address.city,
+            state: business.address.state,
+            category: business.category.name
+          }
+        })
+      })
+  })
+  .then(businesses => {
+    res.json({busDict, catDict})
+  }).catch()
+  // Business.find().sort('name')
+  //   .then(businesses => {
+  //     let theBusinesses = businesses.map(business => {
+  //       return {
+  //         id: business._id,
+  //         name: business.name,
+  //         city: business.address.city,
+  //         state: business.address.state,
+  //         category: business.category.name
+  //       }
+  //     })
+
+  //     Array.prototype.groupBy = function(prop) {
+  //       return this.reduce(function(groups, item) {
+  //         const val = item[prop]
+  //         groups[val] = groups[val] || []
+  //         groups[val].push(item)
+  //         return groups
+  //       }, {})
+  //     };
+
+  //     const groupedByCategory = theBusinesses.groupBy('category')
+  //     const ordered = {};
+  //     Object.keys(groupedByCategory).sort().forEach(function(key) {
+  //       ordered[key] = groupedByCategory[key];
+  //     });
+      
+  //     res.json(ordered)
+  //   })
+  //   .catch(err => {
+  //     console.log(err);
+  //     res.status(500).json({message: 'Internal server error'})
+  //   });
 });
 
 
