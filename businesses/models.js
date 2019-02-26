@@ -40,7 +40,7 @@ let longitudeValidation = function(v, cb) {
 }
 
 const longitude = {
-  type: String,
+  type: Number,
   validate: {
     isAsync: true,
     validator: longitudeValidation,
@@ -58,7 +58,7 @@ let latitudeValidation = function(v, cb) {
 }
 
 const latitude = {
-  type: String,
+  type: Number,
   validate: {
     isAsync: true,
     validator: latitudeValidation,
