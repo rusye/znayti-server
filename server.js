@@ -42,7 +42,7 @@ app.use('/business/', bussRouter);
 
 const jwtAuth = passport.authenticate('jwt', { session: false });
 
-// A protected endpoint which needs a valid JWT to access it
+// A protected endpoint test, requires valid JWT + need to be admin to access it
 app.get('/api/protected', [jwtAuth, isAdmin], (req, res) => {
   return res.json({
     data: 'rosebud'
@@ -53,8 +53,6 @@ app.use('*', (req, res) => {
   return res.status(404).json({ message: 'Not Found' });
 });
 
-// Referenced by both runServer and closeServer. closeServer
-// assumes runServer has run and set `server` to a server object
 let server;
 
 function runServer(databaseUrl, port = PORT) {

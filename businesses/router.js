@@ -1,7 +1,4 @@
 'use strict';
-//----Go through and make sure there are no references to categoryID
-//----Also remove the populate for categories
-//----Remove any pushes to to categoryID for the business array stuff
 
 const express = require('express');
 const router = express.Router();
@@ -21,6 +18,7 @@ const {User} = require('../users/models');
 
 let catDict = {}
 let busDict
+
 // GET request for all business
 router.get('/', (req, res) => {
   let location = req.query.loc.split(',')
@@ -44,40 +42,11 @@ router.get('/', (req, res) => {
   })
   .then(businesses => {
     res.json({busDict, catDict})
-  }).catch()
-  // Business.find().sort('name')
-  //   .then(businesses => {
-  //     let theBusinesses = businesses.map(business => {
-  //       return {
-  //         id: business._id,
-  //         name: business.name,
-  //         city: business.address.city,
-  //         state: business.address.state,
-  //         category: business.category.name
-  //       }
-  //     })
-
-  //     Array.prototype.groupBy = function(prop) {
-  //       return this.reduce(function(groups, item) {
-  //         const val = item[prop]
-  //         groups[val] = groups[val] || []
-  //         groups[val].push(item)
-  //         return groups
-  //       }, {})
-  //     };
-
-  //     const groupedByCategory = theBusinesses.groupBy('category')
-  //     const ordered = {};
-  //     Object.keys(groupedByCategory).sort().forEach(function(key) {
-  //       ordered[key] = groupedByCategory[key];
-  //     });
-      
-  //     res.json(ordered)
-  //   })
-  //   .catch(err => {
-  //     console.log(err);
-  //     res.status(500).json({message: 'Internal server error'})
-  //   });
+  })
+  .catch(err => {
+    console.log(err);
+    res.status(500).json({message: 'Internal server error'})
+  });
 });
 
 
@@ -92,7 +61,7 @@ router.get('/:id', (req, res) => {
 });
 
 
-// ---- Figure out how to check for business name also
+// FUTURE UPDATE: Figure out how to check for business name also
 // ---- Require jwtAuth later ----
 // POST request to create a new business
 router.post('/', (req, res) => {
@@ -170,11 +139,11 @@ router.put('/:id', (req, res) => {
 
   function dotNotate(obj,target,prefix) {
     target = target || {},
-    prefix = prefix || "";
+    prefix = prefix || '';
   
     Object.keys(obj).forEach(function(key) {
-      if ( typeof(obj[key]) === "object" ) {
-        dotNotate(obj[key],target,prefix + key + ".");
+      if ( typeof(obj[key]) === 'object' ) {
+        dotNotate(obj[key],target,prefix + key + '.');
       } else {
         return target[prefix + key] = obj[key];
       }
@@ -185,7 +154,7 @@ router.put('/:id', (req, res) => {
 
   const theUpdate = dotNotate(toUpdate)
 
-  // If name change then also check that the business doesn't exist already
+  // FUTURE UPDATE: If name change then also check that the business doesn't exist already
   Business
     .findByIdAndUpdate(req.params.id, {$set: theUpdate}, {new: true, runValidators: true})
     .then(updatedPost => res.status(204).end())
@@ -200,7 +169,7 @@ router.delete('/:id', (req, res) => {
     .findById(req.params.id)
     .then(business => business.remove())
     .then(business => res.status(204).end())
-    .catch(err => res.status(500).json({message: "Internal server error"}));
+    .catch(err => res.status(500).json({message: 'Internal server error'}));
 });
 
 module.exports = {router};

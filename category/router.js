@@ -1,5 +1,4 @@
 'use strict';
-//----Update to make sure the right things are returning when I call a business category!
 
 const express = require('express');
 const router = express.Router();
@@ -119,7 +118,7 @@ router.delete('/:id', (req, res) => {
   Category
     .findByIdAndRemove(req.params.id)
     .then(category => res.status(204).end())
-    .catch(err => res.status(500).json({message: "Internal server error"}));
+    .catch(err => res.status(500).json({message: 'Internal server error'}));
 });
 
 module.exports = {router};
