@@ -23,13 +23,13 @@ let catDict = {}
 let busDict
 // GET request for all business
 router.get('/', (req, res) => {
+  let location = req.query.loc.split(',')
   Category.find().sort('name')
   .then(categories => {
     categories.forEach(category => {
       catDict[category._id] = category.name
     })
-    // require geo coordinates
-    return Business.find().sort('name')
+    return Business.find({'address.coordinates': {$geoWithin: { $centerSphere: [[ location[0], location[1] ], location[2]/3963.2]}}}).sort('name')
       .then(businesses => {
         busDict = businesses.map(business => {
           return {
