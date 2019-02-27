@@ -49,7 +49,7 @@ const jwtStrategy = new JwtStrategy(
 
 function isAdmin(req, res, next) {
   User.findOne({username: req.user.username})
-  .then(user => {console.log(user.admin)
+  .then(user => {
     if (!user.admin) {
       return res.status(403).json({ message: "Sorry.  Only admin can access this page."})
     }
