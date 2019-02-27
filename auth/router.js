@@ -19,13 +19,12 @@ const createAuthToken = function(user) {
 const localAuth = passport.authenticate('local', {session: false});
 router.use(bodyParser.json());
 
-// FUTURE UPDATE: When regular user's are created.
-// The user provides a username and password to login
-// router.post('/login', localAuth, (req, res) => {
-//   const user = req.user.serialize();
-//   const authToken = createAuthToken(user);
-//   res.json({authToken, user});
-// });
+// FUTURE UPDATE: Add registration for users
+router.post('/login', localAuth, (req, res) => {
+  const user = req.user.serialize();
+  const authToken = createAuthToken(user);
+  res.json({authToken, user});
+});
 
 router.post('/bigboss/login', [localAuth, isAdmin], (req, res) => {
   const user = req.user.serialize();
