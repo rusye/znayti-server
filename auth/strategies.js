@@ -48,10 +48,13 @@ const jwtStrategy = new JwtStrategy(
 );
 
 function isAdmin(req, res, next) {
-  if (!req.user.admin) {
-    return res.status(403).json({ message: "Sorry.  Only admin can access this page."})
-  }
-  next();
+  User.findOne({username: req.user.username})
+  .then(user => {console.log(user.admin)
+    if (!user.admin) {
+      return res.status(403).json({ message: "Sorry.  Only admin can access this page."})
+    }
+    next();
+  })
 }
 
 module.exports = { localStrategy, jwtStrategy, isAdmin };
