@@ -8,9 +8,8 @@ const config = require('../config');
 const router = express.Router();
 const { isAdmin } = require('./strategies');
 
-// FUTURE UPDATE: Create a duplicate token function but without passing through the admin piece
 const createAuthToken = function(user) {
-  return jwt.sign({user, 'admin': user.admin}, config.JWT_SECRET, {
+  return jwt.sign({user}, config.JWT_SECRET, {
     subject: user.username,
     expiresIn: config.JWT_EXPIRY,
     algorithm: 'HS256'
