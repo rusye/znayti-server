@@ -94,7 +94,7 @@ router.post('/', jsonParser, (req, res) => {
     });
   }
 
-  let {username, password, firstName = '', lastName = ''} = req.body;
+  let {username, password, firstName = '', lastName = '', admin} = req.body;
   firstName = firstName.trim();
   lastName = lastName.trim();
 
@@ -116,7 +116,8 @@ router.post('/', jsonParser, (req, res) => {
         username,
         password: hash,
         firstName,
-        lastName
+        lastName,
+        admin
       });
     })
     .then(user => {
