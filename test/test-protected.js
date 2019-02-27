@@ -104,6 +104,8 @@ describe('Protected endpoint', function () {
     });
 
     it('Should send protected data', function () {
+      User.findOneAndUpdate({"username": username}, {$set: {"admin": true}})
+      .then(res => console.log(res))
       const token = jwt.sign(
         {
           user: {
@@ -111,7 +113,7 @@ describe('Protected endpoint', function () {
             firstName,
             lastName,
             "admin": true
-          }, "admin": true
+          }
         },
         JWT_SECRET,
         {
