@@ -20,7 +20,7 @@ let catDict = {}
 let busDict
 
 // GET request for all business
-router.get('/', (req, res) => {
+router.get('/search/', (req, res) => {
   Category.find().sort('name')
   .then(categories => {
     categories.forEach(category => {
