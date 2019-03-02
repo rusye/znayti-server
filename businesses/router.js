@@ -16,38 +16,39 @@ const {Business} = require('./models');
 const {Category} = require('../category/models');
 const {User} = require('../users/models');
 
-let catDict = {}
-let busDict
-
-// GET request for all business
-router.get('/search/', (req, res) => {
-  Category.find().sort('name')
-  .then(categories => {
-    categories.forEach(category => {
-      catDict[category._id] = category.name
+// GET request for categories in an area
+router.get('/search', (req, res) => {
+  Business
+    .find({'address.coordinates': {$geoWithin: { $centerSphere: [[req.query.long, req.query.lat ], req.query.rad/3963.2]}}})
+    .then(categories => {
+      let catNames = []
+      for (let i = 0; i < categories.length; i++) {
+        if (catNames.indexOf(categories[i].category.name) === -1) {
+          catNames.push(categories[i].category.name)
+        }
+      }
+      res.json(catNames.sort())
     })
-    return Business.find({'address.coordinates': {$geoWithin: { $centerSphere: [[req.query.long, req.query.lat ], req.query.rad/3963.2]}}}).sort('name')
-      .then(businesses => {
-        busDict = businesses.map(business => {
-          return {
-            id: business._id,
-            name: business.name,
-            city: business.address.city,
-            state: business.address.state,
-            category: business.category.name
-          }
-        })
-      })
-  })
-  .then(businesses => {
-    res.json({busDict, catDict})
-  })
-  .catch(err => {
-    console.log(err);
-    res.status(500).json({message: 'Internal server error'})
-  });
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({message: 'Internal server error'})
+    });
 });
 
+// GET request for businesses within a category
+router.get('/:category/search', (req, res) => {
+  Business
+    .find({'address.coordinates': {$geoWithin: { $centerSphere: [[req.query.long, req.query.lat ], req.query.rad/3963.2]}}})
+    .sort('name')
+    .then(businesses => {
+      let items = businesses.filter(business => business.category.name === req.params.category)
+      res.json(items.map(item => item.serialize()))
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({message: 'Internal server error'})
+    });
+});
 
 // GET request for a business
 router.get('/:id', (req, res) => {
