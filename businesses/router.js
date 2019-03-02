@@ -37,12 +37,26 @@ router.get('/search', (req, res) => {
 
 // GET request for businesses within a category
 router.get('/:category/search', (req, res) => {
-  Business
-    .find({'address.coordinates': {$geoWithin: { $centerSphere: [[req.query.long, req.query.lat ], req.query.rad/3963.2]}}})
-    .sort('name')
-    .then(businesses => {
-      let items = businesses.filter(business => business.category.name === req.params.category)
-      res.json(items.map(item => item.serialize()))
+  Category
+    .find({name: req.params.category})
+    .then(cat => {
+      if(cat.length === 0) {
+        const message = 'Category not found';
+        console.error(message);
+        return res.status(404).send(message);
+      } else {
+        Business
+          .find({'address.coordinates': {$geoWithin: { $centerSphere: [[req.query.long, req.query.lat ], req.query.rad/3963.2]}}})
+          .sort('name')
+          .then(businesses => {
+            let items = businesses.filter(business => business.category.name === req.params.category)
+            res.json(items.map(item => item.serialize()))
+          })
+          .catch(err => {
+            console.log(err);
+            res.status(500).json({message: 'Internal server error'})
+          });
+      }
     })
     .catch(err => {
       console.log(err);
