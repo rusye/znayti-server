@@ -7,8 +7,6 @@ const {User} = require('./models');
 
 const router = express.Router();
 
-const jsonParser = bodyParser.json();
-
 // ---- activate passport later ----
 // const passport = require('passport');
 
@@ -20,7 +18,7 @@ const jsonParser = bodyParser.json();
 
 // Post to register a new user
 // ---- Require jwtAuth + admin role later ----
-router.post('/', jsonParser, (req, res) => {
+router.post('/', (req, res) => {
   const requiredFields = ['username', 'password'];
   const missingField = requiredFields.find(field => !(field in req.body));
 
