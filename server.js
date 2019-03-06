@@ -59,7 +59,9 @@ function runServer(databaseUrl, port = PORT) {
 
   return new Promise((resolve, reject) => {
     // mongoose.set('debug', true);
-    mongoose.connect(databaseUrl, err => {
+    // Hoping that this doesn't break things, getting rid of deprication warning
+    mongoose.set('useCreateIndex', true);
+    mongoose.connect(databaseUrl, {useNewUrlParser: true}, err => {
       if (err) {
         return reject(err);
       }
