@@ -50,7 +50,14 @@ router.get('/:category/search', (req, res) => {
           .sort('name')
           .then(businesses => {
             let items = businesses.filter(business => business.category.name === req.params.category)
-            res.json(items.map(item => item.serialize()))
+            res.json(items.map(item => {
+              return {
+                id: item._id,
+                name: item.name,
+                city: item.address.city,
+                state: item.address.state
+              }
+            }))
           })
           .catch(err => {
             console.log(err);
@@ -67,7 +74,7 @@ router.get('/:category/search', (req, res) => {
 // GET request for a business
 router.get('/:id', (req, res) => {
   Business.findById(req.params.id)
-    .then(business => res.json(business))
+    .then(business => res.json(business.serialize()))
     .catch(err => {
       console.log(err);
       res.status(500).json({message: 'Internal server error'})
@@ -91,8 +98,22 @@ router.post('/', (req, res) => {
   User.findById(req.body.user_id)
     .then(user => {
       if (user) {
-        Business
-          .create({
+        Business.find({'name': req.body.name, 'address.street': req.body.address.street})
+        .count()
+        .then(count => {
+          console.log(count, 'this is the count')
+          if (count > 0) {
+            return Promise.reject({
+              code: 422,
+              reason: 'ValidationError',
+              message: 'This business already exists at this address',
+              location: 'name and address'
+            });
+          }
+          return count
+        })
+        .then(business => {
+          return Business.create({
             user: req.body.user_id,
             name: req.body.name,
             category: req.body.category,
@@ -100,28 +121,31 @@ router.post('/', (req, res) => {
             hours: req.body.hours,
             tel: req.body.tel
           })
-          .then(business => {
-            Category.findById(business.category).then(category => {
-              if(!(category)) {
-                const message = 'Category not found';
-                console.error(message);
-                return res.status(400).send(message);
-              }
-            });
-            business.save();
-            res.status(201).json({
-              id: business.id,
-              name: business.name,
-              category: business.category,
-              address: business.address,
-              hours: business.hours,
-              tel: business.tel
-            })
-          })
-          .catch(err => {
-            console.error('im inside the error ' + err);
-            res.status(500).json({message: err.message});
+        })
+        .then(business => {
+          Category.findById(business.category).then(category => {
+            if(!(category)) {
+              const message = 'Category not found';
+              console.error(message);
+              return res.status(400).send(message);
+            }
           });
+          res.status(201).json({
+            id: business.id,
+            name: business.name,
+            category: business.category,
+            address: business.address,
+            hours: business.hours,
+            tel: business.tel
+          });
+        })
+        .catch(err => {
+          console.error(err);
+          if (err.reason === 'ValidationError') {
+            return res.status(err.code).json(err);
+          }
+          res.status(500).json({code: 500, message: 'Internal server error'});
+        });
       }
       else {
         const message = 'User not found';
