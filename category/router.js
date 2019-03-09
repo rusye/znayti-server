@@ -74,13 +74,13 @@ router.post('/', (req, res) => {
           return count
         })
         .then(category => {
-          console.log(category)
           return Category.create({
             user: req.body.user_id,
             name: req.body.name.toLowerCase()
           })
         })
         .catch(err => {
+          console.error(err);
           if (err.reason === 'ValidationError') {
             return res.status(err.code).json(err);
           }
