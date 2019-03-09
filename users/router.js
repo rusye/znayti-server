@@ -21,6 +21,16 @@ router.post('/', (req, res) => {
   const requiredFields = ['username', 'password'];
   const missingField = requiredFields.find(field => !(field in req.body));
 
+  // const passwordValidate = req.body.password.match(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/)
+  // if (!passwordValidate) {
+  //   return res.status(422).json({
+  //     code: 422,
+  //     reason: 'ValidationError',
+  //     message: 'Password must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters',
+  //     location: 'Password'
+  //   });
+  // }
+
   if (missingField) {
     return res.status(422).json({
       code: 422,
@@ -60,18 +70,21 @@ router.post('/', (req, res) => {
 
   const sizedFields = {
     username: {
-      min: 1
+      min: 4,
+      max: 35
     },
     password: {
-      min: 10,
+      min: 8,
       max: 72
     }
   };
+
   const tooSmallField = Object.keys(sizedFields).find(
     field =>
       'min' in sizedFields[field] &&
             req.body[field].trim().length < sizedFields[field].min
   );
+
   const tooLargeField = Object.keys(sizedFields).find(
     field =>
       'max' in sizedFields[field] &&
@@ -83,9 +96,9 @@ router.post('/', (req, res) => {
       code: 422,
       reason: 'ValidationError',
       message: tooSmallField
-        ? `Must be at least ${sizedFields[tooSmallField]
+        ? `Field: ${tooSmallField} must be at least ${sizedFields[tooSmallField]
           .min} characters long`
-        : `Must be at most ${sizedFields[tooLargeField]
+        : `Field: ${tooLargeField} must be at most ${sizedFields[tooLargeField]
           .max} characters long`,
       location: tooSmallField || tooLargeField
     });
