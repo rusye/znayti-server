@@ -52,10 +52,19 @@ router.get('/:id', (req, res) => {
 // POST request to create a new category
 router.post('/', (req, res) => {
   if (!('name' in req.body)) {
-    const message = `Missing name in request body`;
+    const message = 'Missing name in request body';
     console.error(message);
-    return res.status(400).send(message);
+    return res.status(400).json({code: 400, message});
   };
+  
+  if (!req.body.name.match(/^(\b[A-Z]\w*\s*)+.{2,}$/)) {
+    return res.status(422).json({
+      code: 422,
+      reason: 'ValidationError',
+      message: 'Please enter category name that is 3+ characters, first letters are capitalized',
+      location: 'Name'
+    });
+  }
 
   User.findById(req.body.user_id)
     .then(user => {
@@ -76,7 +85,7 @@ router.post('/', (req, res) => {
         .then(category => {
           return Category.create({
             user: req.body.user_id,
-            name: req.body.name.toLowerCase()
+            name: req.body.name
           })
         })
         .catch(err => {
@@ -90,7 +99,8 @@ router.post('/', (req, res) => {
       else {
         const message = 'User not found';
         console.error(message);
-        return res.status(400).send(message);
+        return res.status(400).send(message)
+        // return res.status(400).json({code: 400, message});
       }
     })
     .catch(err => {
@@ -104,7 +114,7 @@ router.post('/', (req, res) => {
 // PUT request to update a category
 router.put('/:id', (req, res) => {
   if (!(req.params.id && req.body.id && req.params.id === req.body.id)) {
-    res.status(400).json({message: `ID's do not match`});
+    res.status(400).json({code: 400, message: `ID's do not match`});
   }
 
   const toUpdate = {};
