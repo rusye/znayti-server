@@ -43,7 +43,7 @@ router.get('/:category/search', (req, res) => {
       if(cat.length === 0) {
         const message = 'Category not found';
         console.error(message);
-        return res.status(404).send(message);
+        return res.status(404).json({code: 400, message});
       } else {
         Business
           .find({'address.coordinates': {$geoWithin: { $centerSphere: [[req.query.long, req.query.lat ], req.query.rad/3963.2]}}})
@@ -91,7 +91,7 @@ router.post('/', (req, res) => {
     if (!(field in req.body)) {
       const message = `Missing \`${field}\` in request body`;
       console.error(message);
-      return res.status(400).send(message);
+      return res.status(400).json({code: 400, message});
     }
   });
 
@@ -101,7 +101,6 @@ router.post('/', (req, res) => {
         Business.find({'name': req.body.name, 'address.street': req.body.address.street})
         .count()
         .then(count => {
-          console.log(count, 'this is the count')
           if (count > 0) {
             return Promise.reject({
               code: 422,
@@ -127,7 +126,7 @@ router.post('/', (req, res) => {
             if(!(category)) {
               const message = 'Category not found';
               console.error(message);
-              return res.status(400).send(message);
+              return res.status(400).json({code: 400, message});
             }
           });
           res.status(201).json({
@@ -150,7 +149,7 @@ router.post('/', (req, res) => {
       else {
         const message = 'User not found';
         console.error(message);
-        return res.status(400).send(message);
+        return res.status(400).json({code: 400, message});
       }
     })
     .catch(err => {
