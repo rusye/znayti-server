@@ -60,22 +60,32 @@ router.post('/', (req, res) => {
   User.findById(req.body.user_id)
     .then(user => {
       if (user) {
-        Category
-          .create({
+        Category.find({'name': req.body.name})
+        .count()
+        .then(count => {
+          if (count > 0) {
+            return Promise.reject({
+              code: 422,
+              reason: 'ValidationError',
+              message: 'Category already exists',
+              location: 'name'
+            });
+          }
+          return count
+        })
+        .then(category => {
+          console.log(category)
+          return Category.create({
             user: req.body.user_id,
-            name: req.body.name
+            name: req.body.name.toLowerCase()
           })
-          .then(category => {
-            category.save();
-            res.status(201).json({
-              id: category.id,
-              name: category.name
-            })
-          })
-          .catch(err => {
-            console.error(err);
-            res.status(500).json({message: 'Something went wrong'});
-          });
+        })
+        .catch(err => {
+          if (err.reason === 'ValidationError') {
+            return res.status(err.code).json(err);
+          }
+          res.status(500).json({code: 500, message: 'Internal server error'});
+        });
       }
       else {
         const message = 'User not found';
