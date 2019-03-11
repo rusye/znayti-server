@@ -33,8 +33,8 @@ const hoursLogic = {
 
 let longitudeValidation = function(v, cb) {
   setTimeout(function() {
-    let longitudeRegex = /^[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$/;
-    let msg = v + ' is not a valid longitude! Must be between -180 and +180';
+    let longitudeRegex = /^([\-])(180(\.0+)?|(1[0-7]\d)|([1-9]?\d))(\.\d+)?$/;
+    let msg = v + ' is not a valid longitude! Must be between -180 and 0';
     cb(longitudeRegex.test(v), msg);
   }, 5);
 }
@@ -51,8 +51,8 @@ const longitude = {
 
 let latitudeValidation = function(v, cb) {
   setTimeout(function() {
-    let latitudeRegex = /^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?)$/;
-    let msg = v + ' is not a valid latitude! Must be between -90 and +90';
+    let latitudeRegex = /^([+]?)(90(\.0+)?|([1-8]?\d))(\.\d+)?$/;
+    let msg = v + ' is not a valid latitude! Must be between 0 and +90';
     cb(latitudeRegex.test(v), msg);
   }, 5);
 }
@@ -89,7 +89,7 @@ const BusinessSchema = mongoose.Schema({
   name: {type: String, required: true},
   category: {type: mongoose.Schema.Types.ObjectId, ref: 'Category'},
   address: {
-    street: String,
+    street: {type: String, required: true},
     city: {type: String, required: true},
     state: {
       type: String,
