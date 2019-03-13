@@ -19,7 +19,9 @@ const {User} = require('../users/models');
 
 // GET request for all categories
 router.get('/', (req, res) => {
-  Category.find()
+  Category
+    .find()
+    .sort('name')
     .then(categories => res.json(categories.map(category => category.serialize())))
     .catch(err => {
       console.log(err);
@@ -87,6 +89,9 @@ router.post('/', (req, res) => {
             user: req.body.user_id,
             name: req.body.name
           })
+        })
+        .then(category => {
+          return res.status(201).json(category.serialize());
         })
         .catch(err => {
           console.error(err);
