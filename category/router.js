@@ -105,7 +105,6 @@ router.post('/', (req, res) => {
         const message = 'User not found';
         console.error(message);
         return res.status(400).send(message)
-        // return res.status(400).json({code: 400, message});
       }
     })
     .catch(err => {
@@ -131,9 +130,32 @@ router.put('/:id', (req, res) => {
   });
 
   Category
-    .findByIdAndUpdate(req.params.id, {$set: toUpdate}, {new: true})
-    .then(updatedCategory => res.status(204).end())
-    .catch(err => res.status(500).json({message: 'Something went wrong'}));
+    .find({'name': req.body.name})
+    .count()
+    .then(count => {
+      if (count > 0) {
+        return Promise.reject({
+          code: 422,
+          reason: 'ValidationError',
+          message: 'Category already exists',
+          location: 'name'
+        });
+      }
+      return count
+    })
+    .then(count => {
+      Category
+        .findByIdAndUpdate(req.params.id, {$set: toUpdate}, {new: true})
+        .then(updatedCategory => res.status(204).end())
+        .catch(err => res.status(500).json({message: 'Something went wrong'}));
+    })
+    .catch(err => {
+      console.error(err);
+      if (err.reason === 'ValidationError') {
+        return res.status(err.code).json(err);
+      }
+      res.status(500).json({message: 'Something went wrong'})
+    });
 });
 
 
