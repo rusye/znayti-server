@@ -86,7 +86,7 @@ router.get('/:id', (req, res) => {
 // ---- Require jwtAuth later ----
 // POST request to create a new business
 router.post('/', (req, res) => {
-  const requiredFields = ['name', 'category', 'address', 'hours', 'tel'];
+  const requiredFields = ['name', 'category', 'address', 'hours', 'telephone'];
   requiredFields.forEach(field => {
     if (!(field in req.body)) {
       const message = `Missing \`${field}\` in request body`;
@@ -146,7 +146,7 @@ router.post('/', (req, res) => {
             category: req.body.category,
             address: req.body.address,
             hours: req.body.hours,
-            tel: req.body.tel
+            telephone: req.body.telephone
           })
         })
         .then(business => {
@@ -163,7 +163,7 @@ router.post('/', (req, res) => {
             category: business.category,
             address: business.address,
             hours: business.hours,
-            tel: business.tel
+            telephone: business.telephone
           });
         })
         .catch(err => {
@@ -195,7 +195,7 @@ router.put('/:id', (req, res) => {
   }
 
   const toUpdate = {};
-  const updateableFields = ['user', 'name', 'category', 'address', 'hours', 'tel'] 
+  const updateableFields = ['user', 'name', 'category', 'address', 'hours', 'telephone'] 
   updateableFields.forEach(field => {
     if (field in req.body) {
       toUpdate[field] = req.body[field];

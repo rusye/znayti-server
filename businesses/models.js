@@ -31,39 +31,12 @@ const hoursLogic = {
   required: true
 };
 
-let longitudeValidation = function(v, cb) {
-  setTimeout(function() {
-    let longitudeRegex = /^([\-])(180(\.0+)?|(1[0-7]\d)|([1-9]?\d))(\.\d+)?$/;
-    let msg = v + ' is not a valid longitude! Must be between -180 and 0';
-    cb(longitudeRegex.test(v), msg);
-  }, 5);
-}
-
 const longitude = {
   type: Number,
-  validate: {
-    isAsync: true,
-    validator: longitudeValidation,
-    message: 'Default error message'
-  },
   required: true
 }
-
-let latitudeValidation = function(v, cb) {
-  setTimeout(function() {
-    let latitudeRegex = /^([+]?)(90(\.0+)?|([1-8]?\d))(\.\d+)?$/;
-    let msg = v + ' is not a valid latitude! Must be between 0 and +90';
-    cb(latitudeRegex.test(v), msg);
-  }, 5);
-}
-
 const latitude = {
   type: Number,
-  validate: {
-    isAsync: true,
-    validator: latitudeValidation,
-    message: 'Default error message'
-  },
   required: true
 }
 
@@ -108,7 +81,7 @@ const BusinessSchema = mongoose.Schema({
     Saturday: hoursLogic,
     Sunday: hoursLogic
   },
-  tel: {
+  telephone: {
     type: String,
     validate: {
       isAsync: true,
@@ -128,7 +101,7 @@ BusinessSchema.methods.serialize = function () {
     category: this.category,
     address: this.address,
     hours: this.hours,
-    tel: this.tel
+    telephone: this.telephone
   };
 };
 
