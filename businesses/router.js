@@ -95,20 +95,30 @@ router.post('/', (req, res) => {
     }
   });
 
-  if (!req.body.address.coordinates[0].match(/^([\-])(180(\.0+)?|(1[0-7]\d)|([1-9]?\d))(\.\d+)?$/)) {
+  function isLatitude(lat) {
+    if (isNaN(lat)) return true
+    if (lat >= -0 && lat <= 90) return true
+  }
+
+  if(!isLatitude(req.body.address.coordinates[1])) {
+    return res.status(422).json({
+      code: 422,
+      reason: 'ValidationError',
+      message: 'Latitude must be between 0 and 90',
+      location: 'Coordinates'
+    });
+  }
+  
+  function isLongitude(long) {
+    if (isNaN(long)) return true
+    if(long >= -180 && long <= 0) return true
+  }
+
+  if(!isLongitude(req.body.address.coordinates[0])) {
     return res.status(422).json({
       code: 422,
       reason: 'ValidationError',
       message: 'Longitude must be between -180 and 0',
-      location: 'Coordinates'
-    });
-  }
-
-  if (!req.body.address.coordinates[1].match(/^([+]?)(90(\.0+)?|([1-8]?\d))(\.\d+)?$/)) {
-    return res.status(422).json({
-      code: 422,
-      reason: 'ValidationError',
-      message: 'Latitude must be between 0 and +90',
       location: 'Coordinates'
     });
   }
