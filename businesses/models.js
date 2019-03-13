@@ -100,13 +100,13 @@ const BusinessSchema = mongoose.Schema({
     coordinates: [longitude, latitude]
   },
   hours: {
-    monday: hoursLogic,
-    tuesday: hoursLogic,
-    wednesday: hoursLogic,
-    thursday: hoursLogic,
-    friday: hoursLogic,
-    saturday: hoursLogic,
-    sunday: hoursLogic
+    Monday: hoursLogic,
+    Tuesday: hoursLogic,
+    Wednesday: hoursLogic,
+    Thursday: hoursLogic,
+    Friday: hoursLogic,
+    Saturday: hoursLogic,
+    Sunday: hoursLogic
   },
   tel: {
     type: String,
