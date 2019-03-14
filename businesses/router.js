@@ -41,9 +41,9 @@ router.get('/:category/search', (req, res) => {
     .find({name: req.params.category})
     .then(cat => {
       if(cat.length === 0) {
-        const message = 'Category not found';
+        const message = '404 Category not found';
         console.error(message);
-        return res.status(404).json({code: 400, message});
+        return res.status(404).json({code: 404, message});
       } else {
         Business
           .find({'address.coordinates': {$geoWithin: { $centerSphere: [[req.query.long, req.query.lat ], req.query.rad/3963.2]}}})
@@ -74,9 +74,24 @@ router.get('/:category/search', (req, res) => {
 // GET request for a business
 router.get('/:id', (req, res) => {
   Business.findById(req.params.id)
+    .count()
+    .then(count => {
+      if (count === 0) {
+        return Promise.reject({
+          code: 404,
+          reason: 'ValidationError',
+          message: '404 Business not found',
+          location: 'name'
+        });
+      }
+      return count
+    })
     .then(business => res.json(business.serialize()))
     .catch(err => {
       console.log(err);
+      if (err.reason === 'ValidationError') {
+        return res.status(err.code).json(err);
+      }
       res.status(500).json({message: 'Internal server error'})
     });
 });
@@ -139,32 +154,48 @@ router.post('/', (req, res) => {
           }
           return count
         })
-        .then(business => {
-          return Business.create({
-            user: req.body.user_id,
-            name: req.body.name,
-            category: req.body.category,
-            address: req.body.address,
-            hours: req.body.hours,
-            telephone: req.body.telephone
-          })
-        })
-        .then(business => {
-          Category.findById(business.category).then(category => {
-            if(!(category)) {
-              const message = 'Category not found';
-              console.error(message);
-              return res.status(400).json({code: 400, message});
-            }
-          });
-          res.status(201).json({
-            id: business.id,
-            name: business.name,
-            category: business.category,
-            address: business.address,
-            hours: business.hours,
-            telephone: business.telephone
-          });
+        .then(category => {
+          Category
+            .findById(req.body.category)
+            .count()
+            .then(count => {
+              if (count === 0) {
+                return Promise.reject({
+                  code: 400,
+                  reason: 'ValidationError',
+                  message: 'Category doesn\'t exist',
+                  location: 'category name'
+                });
+              }
+              return count
+            })
+            .then(business => {
+              return Business.create({
+                user: req.body.user_id,
+                name: req.body.name,
+                category: req.body.category,
+                address: req.body.address,
+                hours: req.body.hours,
+                telephone: req.body.telephone
+              })
+            })
+            .then(business => {
+              res.status(201).json({
+                id: business.id,
+                name: business.name,
+                category: business.category,
+                address: business.address,
+                hours: business.hours,
+                telephone: business.telephone
+              });
+            })
+            .catch(err => {
+              console.error(err);
+              if (err.reason === 'ValidationError') {
+                return res.status(err.code).json(err);
+              }
+              res.status(500).json({code: 500, message: 'Internal server error'});
+            });
         })
         .catch(err => {
           console.error(err);
