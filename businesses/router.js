@@ -74,9 +74,8 @@ router.get('/:category/search', (req, res) => {
 // GET request for a business
 router.get('/:id', (req, res) => {
   Business.findById(req.params.id)
-    .count()
     .then(count => {
-      if (count === 0) {
+      if (count === null) {
         return Promise.reject({
           code: 404,
           reason: 'ValidationError',
