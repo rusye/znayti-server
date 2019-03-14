@@ -7,8 +7,8 @@ const statesArray = ['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DC', 'DE', 'FL',
 
 let telephoneValidate = function(v, cb) {
   setTimeout(function() {
-    let phoneRegex = /\d{3}-\d{3}-\d{4}/;
-    let msg = v + ' is not a valid phone number! Must be 123-123-1234';
+    let phoneRegex = /^([(]\d{3}[)])\s(\d{3})[-](\d{4})$/;
+    let msg = v + ' is not a valid phone number! Must be (123) 123-1234';
     cb(phoneRegex.test(v), msg);
   }, 5);
 }
