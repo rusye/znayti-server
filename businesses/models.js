@@ -7,18 +7,20 @@ const statesArray = ['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DC', 'DE', 'FL',
 
 let telephoneValidate = function(v, cb) {
   setTimeout(function() {
-    let phoneRegex = /^([(]\d{3}[)])\s(\d{3})[-](\d{4})$/;
-    let msg = v + ' is not a valid phone number! Must be (123) 123-1234';
+    let phoneRegex = /^[0-9]{10,10}$/;
+    let msg = v + ' is not a valid phone number! Must be 1234567890';
     cb(phoneRegex.test(v), msg);
   }, 5);
 }
 
 const hoursValidation = function(v, cb) {
-  setTimeout(function() {
-    let hoursRegex = /^(open)\s([01]?[0-9]|2[0-3]):([0-5][0-9])\s(close)\s([01]?[0-9]|2[0-3]):([0-5][0-9])|(closed)$/;
-    let msg = v + ' is not a valid hours format! Must be "open 01:12 close 12:12" or "closed"';
-    cb(hoursRegex.test(v), msg);
-  }, 5)
+  if(v.toString()=="") {
+    return true
+  } else {
+    let hoursRegex = /^([0-1][0-9]|2[0-3]):([0-5][0-9])$/;
+    let msg = v + ' is not a valid hours format! Must be between 00:00 and 23:59 or ""';
+    cb(hoursRegex.test(v), msg)
+  };
 }
 
 const hoursLogic = {
@@ -28,7 +30,7 @@ const hoursLogic = {
     validator: hoursValidation,
     message: 'Default error message'
   },
-  required: true
+  default: ''
 };
 
 const longitude = {
@@ -73,13 +75,13 @@ const BusinessSchema = mongoose.Schema({
     coordinates: [longitude, latitude]
   },
   hours: {
-    Monday: hoursLogic,
-    Tuesday: hoursLogic,
-    Wednesday: hoursLogic,
-    Thursday: hoursLogic,
-    Friday: hoursLogic,
-    Saturday: hoursLogic,
-    Sunday: hoursLogic
+    Monday: {open: hoursLogic, close: hoursLogic},
+    Tuesday: {open: hoursLogic, close: hoursLogic},
+    Wednesday: {open: hoursLogic, close: hoursLogic},
+    Thursday: {open: hoursLogic, close: hoursLogic},
+    Friday: {open: hoursLogic, close: hoursLogic},
+    Saturday: {open: hoursLogic, close: hoursLogic},
+    Sunday: {open: hoursLogic, close: hoursLogic}
   },
   telephone: {
     type: String,
