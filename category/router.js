@@ -162,11 +162,16 @@ router.put('/:id', (req, res) => {
 // ---- Require jwtAuth later ----
 // DELETE request to delete a category
 router.delete('/:id', (req, res) => {
-  Business.find({category: req.params.id})
+  Business
+    .find({category: req.params.id})
     .count()
     .then(count => {
       if (count > 0) {
-        res.status(400).json({code: 400, message: 'Removal of category prohibited, a business(s) use this category!'})
+        return Promise.reject({
+          code: 400,
+          reason: 'ClientError',
+          message: 'Removal of category prohibited, a business(s) use this category!'
+        });
       }
       return count
     })
@@ -176,7 +181,13 @@ router.delete('/:id', (req, res) => {
         .then(category => res.status(204).end())
         .catch(err => res.status(500).json({message: 'Internal server error'}));
     })
-    .catch(err => res.status(500).json({message: 'Internal server error'}));
+    .catch(err => {
+      console.error(err);
+      if (err.reason === 'ClientError') {
+        return res.status(err.code).json(err);
+      }
+      res.status(500).json({message: 'Something went wrong'})
+    });
 });
 
 module.exports = {router};
