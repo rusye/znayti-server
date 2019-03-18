@@ -100,7 +100,7 @@ router.get('/:id', (req, res) => {
 // ---- Require jwtAuth later ----
 // POST request to create a new business
 router.post('/', (req, res) => {
-  const requiredFields = ['name', 'category', 'address', 'hours', 'telephone'];
+  let requiredFields = ['name', 'category', 'address', 'hours', 'telephone'];
   requiredFields.forEach(field => {
     if (!(field in req.body)) {
       const message = `Missing \`${field}\` in request body`;
@@ -224,6 +224,15 @@ router.put('/:id', (req, res) => {
     res.status(400).json({message: `ID's do not match`});
   }
 
+  let requiredFields = ['name','address'];
+  requiredFields.forEach(field => {
+    if (!(field in req.body)) {
+      const message = `Missing \`${field}\` in request body`;
+      console.error(message);
+      return res.status(400).json({code: 400, message});
+    }
+  });
+
   const toUpdate = {};
   const updateableFields = ['user', 'name', 'category', 'address', 'hours', 'telephone'] 
   updateableFields.forEach(field => {
@@ -249,11 +258,59 @@ router.put('/:id', (req, res) => {
 
   const theUpdate = dotNotate(toUpdate)
 
-  // FUTURE UPDATE: If name change then also check that the business doesn't exist already
   Business
-    .findByIdAndUpdate(req.params.id, {$set: theUpdate}, {new: true, runValidators: true})
-    .then(updatedPost => res.status(204).end())
-    .catch(err => res.status(500).json({message: err.message}));
+    .find({'name': req.body.name, 'address.street': req.body.address.street})
+    .then(res => {
+      if(res.length === 0) {
+        return res
+      }
+
+      if (!(`${res[0]._id}` === req.body.id)) {
+        return Promise.reject({
+          code: 422,
+          reason: 'ValidationError',
+          message: 'This business already exists at this address',
+          location: 'name and address'
+        });
+      }
+      return res
+    })
+    .then(category => {
+      Category
+        .findById(req.body.category)
+        .count()
+        .then(count => {
+          if (count === 0) {
+            return Promise.reject({
+              code: 400,
+              reason: 'ValidationError',
+              message: 'Category doesn\'t exist',
+              location: 'category name'
+            });
+          }
+          return count
+        })
+        .then(count => {
+          Business
+            .findByIdAndUpdate(req.params.id, {$set: theUpdate}, {new: true, runValidators: true})
+            .then(updatedPost => res.status(204).end())
+            .catch(err => res.status(500).json({message: err.message}));
+        })
+        .catch(err => {
+          console.error(err);
+          if (err.reason === 'ValidationError') {
+            return res.status(err.code).json(err);
+          }
+          res.status(500).json({code: 500, message: 'Internal server error'});
+        });
+    })
+    .catch(err => {
+      console.error(err);
+      if (err.reason === 'ValidationError') {
+        return res.status(err.code).json(err);
+      }
+      res.status(500).json({code: 500, message: 'Internal server error'});
+    });
 })
 
 
