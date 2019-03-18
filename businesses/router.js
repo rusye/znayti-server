@@ -224,7 +224,7 @@ router.put('/:id', (req, res) => {
     res.status(400).json({message: `ID's do not match`});
   }
 
-  let requiredFields = ['name','address'];
+  let requiredFields = ['name','address', 'user'];
   requiredFields.forEach(field => {
     if (!(field in req.body)) {
       const message = `Missing \`${field}\` in request body`;
