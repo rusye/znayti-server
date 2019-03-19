@@ -5,6 +5,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
 const passport = require('passport');
+const axios = require('axios');
 
 const { router: usersRouter } = require('./users');
 const { router: authRouter, localStrategy, jwtStrategy, isAdmin } = require('./auth');
@@ -13,7 +14,7 @@ const { router: bussRouter } = require('./businesses');
 
 mongoose.Promise = global.Promise;
 
-const { PORT, DATABASE_URL } = require('./config');
+const { MAPQUEST_API, PORT, DATABASE_URL } = require('./config');
 
 const app = express();
 app.use(express.json());
@@ -48,6 +49,20 @@ app.get('/api/protected', [jwtAuth, isAdmin], (req, res) => {
     data: 'rosebud'
   });
 });
+
+app.post('/location', (req, res) => {
+  const key = `?key=${MAPQUEST_API}`
+  return (axios.get(`https://www.mapquestapi.com/geocoding/v1/address${key}&location=${req.body.location}`))
+  .then(results => {
+    let lat = results.data.results[0].locations[0].latLng.lat;
+    let long = results.data.results[0].locations[0].latLng.lng;
+    res.json({lat, long})
+  })
+  .catch(err => {
+    console.log(err);
+    res.status(500).json({message: 'Internal server error'})
+  })
+})
 
 app.use('*', (req, res) => {
   return res.status(404).json({ message: 'Not Found' });
