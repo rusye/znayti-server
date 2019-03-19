@@ -177,7 +177,7 @@ describe('/api/user', function () {
           .then(res => {
             expect(res).to.have.status(422);
             expect(res.body.reason).to.equal('ValidationError');
-            expect(res.body.message).to.equal('Must be at least 1 characters long')
+            expect(res.body.message).to.equal('username must be at least 4 characters long')
             expect(res.body.location).to.equal('username');
           });
       });
@@ -193,7 +193,7 @@ describe('/api/user', function () {
           .then(res => {
             expect(res).to.have.status(422);
             expect(res.body.reason).to.equal('ValidationError');
-            expect(res.body.message).to.equal('Must be at least 10 characters long');
+            expect(res.body.message).to.equal('password must be at least 8 characters long');
             expect(res.body.location).to.equal('password');
           });
       });
@@ -209,7 +209,7 @@ describe('/api/user', function () {
           .then(res => {
             expect(res).to.have.status(422);
             expect(res.body.reason).to.equal('ValidationError');
-            expect(res.body.message).to.equal('Must be at most 72 characters long');
+            expect(res.body.message).to.equal('password must be at most 72 characters long');
             expect(res.body.location).to.equal('password');
           });
       });
