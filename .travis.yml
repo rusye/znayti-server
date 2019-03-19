@@ -1,2 +1,9 @@
 language: node_js
 node_js: node
+deploy:
+  provider: heroku
+  api_key:
+    secure: YNrCnckbz1EYIqGBIWUuEcYZQoHpe47pR9EKtH1Su96CYUakYv+o3zTwZp8G93q88fUR/4sHaYxeJ3B1JKol7poQLNOPxqcj4ETpy/G6+sCrCm703o5B5ZJd8W4iWHUMo16GxKgzaZeXpjQls2iEJ5ZZ2OoFCldSe3frQ/NHNd4Qmw54K8FmnbO3uvKTkx/M/oYadmsspUmHcpCo5ScHvzrl+kHpboVBSEPyOB+HU0WZnbFuyf6GQEtIIIIWGQfHUq/36cQqmOsdBrBB5uIZtucNtcgt/aNSjg24RKjuXqiYJ0hu8Z/FSAINB7Z6ERUt5ZI2Ib3TS3FS6HAvdj6Hk3UM//+dRG5P8qwjf3lZNaKtch+sheXfVzaby3mfHjKhUdMZEgC1wbDBAW+bZj5jHCPLVPmunHb/zlDfge/ZgkgucpkL1YIeqr9cl17Wz1vF0p77wHN6yzPOWaUc+rBXGHtK9pMACQrJzI4n7VwAVTPXPteIuu3gt/AfH3yZoqROH60MDIolGx827eWOVJyDxL9jo+rOEtWZSV5MrIsjeiko5S9hcRJaBPU6rN42Ha6Cu7S7AWsKeiOCsxVqBYzQ3mC4ckwhHAF5QSXYr3uF0tmnHzH7hpuNyVXla0MYoJ/jHejlSbFwVVj3t//qCpgDSHtznOy9+W1MvYO80v36mns=
+  app: boiling-mountain-47103
+  on:
+    repo: rusye/znayti-server
