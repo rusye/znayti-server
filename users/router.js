@@ -21,6 +21,7 @@ router.post('/', (req, res) => {
   const requiredFields = ['username', 'password'];
   const missingField = requiredFields.find(field => !(field in req.body));
 
+  // Add this in later
   // const passwordValidate = req.body.password.match(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/)
   // if (!passwordValidate) {
   //   return res.status(422).json({
@@ -96,9 +97,9 @@ router.post('/', (req, res) => {
       code: 422,
       reason: 'ValidationError',
       message: tooSmallField
-        ? `Field: ${tooSmallField} must be at least ${sizedFields[tooSmallField]
+        ? `${tooSmallField} must be at least ${sizedFields[tooSmallField]
           .min} characters long`
-        : `Field: ${tooLargeField} must be at most ${sizedFields[tooLargeField]
+        : `${tooLargeField} must be at most ${sizedFields[tooLargeField]
           .max} characters long`,
       location: tooSmallField || tooLargeField
     });
