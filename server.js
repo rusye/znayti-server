@@ -64,7 +64,7 @@ app.post("/location", (req, res) => {
       }`
     )
     .then(results => {
-      console.log(results.data.results[0])
+      console.log(results.data)
       let lat = results.data.results[0].geometry.location.lat;
       let long = results.data.results[0].geometry.location.lng;
       res.json({ lat, long });
