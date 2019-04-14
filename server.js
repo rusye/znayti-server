@@ -16,6 +16,7 @@ const {
 } = require("./auth");
 const { router: catRouter } = require("./category");
 const { router: bussRouter } = require("./businesses");
+const { router: emailRouter } = require("./mailRouter");
 
 mongoose.Promise = global.Promise;
 
@@ -45,6 +46,7 @@ app.use("/api/users/", usersRouter);
 app.use("/api/auth/", authRouter);
 app.use("/categories/", catRouter);
 app.use("/business/", bussRouter);
+app.use("/emailsupport/", emailRouter);
 
 const jwtAuth = passport.authenticate("jwt", { session: false });
 
@@ -82,9 +84,7 @@ app.post("/findbusiness", (req, res) => {
       `https://maps.googleapis.com/maps/api/place/findplacefromtext/json${key}&input=${findBusiness}&inputtype=textquery`
     )
     .then(results => {
-      console.log(results.data.candidates[0].place_id);
       let place_id = results.data.candidates[0].place_id;
-      console.log(results.data.candidates.length);
       return place_id;
     })
     .then(place => {
@@ -113,7 +113,6 @@ let server;
 function runServer(databaseUrl, port = PORT) {
   return new Promise((resolve, reject) => {
     // mongoose.set('debug', true);
-    // Hoping that this doesn't break things, getting rid of deprication warning
     mongoose.set("useCreateIndex", true);
     mongoose.connect(databaseUrl, { useNewUrlParser: true }, err => {
       if (err) {
