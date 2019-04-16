@@ -84,6 +84,13 @@ app.post("/findbusiness", (req, res) => {
       `https://maps.googleapis.com/maps/api/place/findplacefromtext/json${key}&input=${findBusiness}&inputtype=textquery`
     )
     .then(results => {
+      if (results.data.status === "ZERO_RESULTS") {
+        return Promise.reject({
+          code: 422,
+          reason: "ValidationError",
+          message: "Unable to find business"
+        });
+      }
       let place_id = results.data.candidates[0].place_id;
       return place_id;
     })
@@ -100,6 +107,10 @@ app.post("/findbusiness", (req, res) => {
     })
     .catch(err => {
       console.log(err);
+      if (err.reason === "ValidationError") {
+        return res.status(err.code).json(err);
+      }
+
       res.status(500).json({ message: "Internal server error" });
     });
 });
