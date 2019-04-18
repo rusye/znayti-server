@@ -96,11 +96,10 @@ router.post("/", (req, res) => {
         `<h1>${adminIntroHtml}</h1><p>${submissionDetails}<br />` +
         (req.body.formID === "edit"
           ? `Business ID: ${req.body.businessID}`
-          : `</p>`)
+          : null) +
+        `</p>`
     }
   ];
-
-  res.status(201).json({ message: "Email successfully sent" });
 
   mailOptions.forEach(mail => {
     transporter.sendMail(mail, function(err, info) {
