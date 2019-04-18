@@ -73,6 +73,9 @@ router.post("/", (req, res) => {
       user: `${ZOHO_USER}`,
       pass: `${ZOHO_PASS}`
     },
+    tls: {
+      ciphers: "SSLv3"
+    },
     logger: true,
     debug: false
   });
