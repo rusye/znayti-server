@@ -67,7 +67,7 @@ router.post("/", (req, res) => {
 
   let transporter = nodemailer.createTransport({
     host: "smtp.zoho.com",
-    port: 587,
+    port: 465,
     secure: false,
     auth: {
       user: `${ZOHO_USER}`,
