@@ -66,16 +66,20 @@ router.post("/", (req, res) => {
         Comment: ${comment}`;
 
   let transporter = nodemailer.createTransport({
-    host: "smtp.zoho.com",
-    port: 465,
-    secure: false,
+    service: "Zoho",
+    // host: "smtp.zoho.com",
+    host: this.service,
+    port: 587,
+    // secure: false,
+    ignoreTLS: true,
+    requireTLS: false,
     auth: {
       user: `${ZOHO_USER}`,
       pass: `${ZOHO_PASS}`
     },
-    tls: {
-      ciphers: "SSLv3"
-    },
+    // tls: {
+    //   ciphers: "SSLv3"
+    // },
     logger: true,
     debug: false
   });
