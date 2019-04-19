@@ -67,19 +67,14 @@ router.post("/", (req, res) => {
 
   let transporter = nodemailer.createTransport({
     service: "Zoho",
-    // host: "smtp.zoho.com",
     host: this.service,
     port: 587,
-    // secure: false,
     ignoreTLS: true,
     requireTLS: false,
     auth: {
       user: `${ZOHO_USER}`,
       pass: `${ZOHO_PASS}`
     },
-    // tls: {
-    //   ciphers: "SSLv3"
-    // },
     logger: true,
     debug: false
   });
@@ -108,6 +103,8 @@ router.post("/", (req, res) => {
     }
   ];
 
+  let emailsSent = 0;
+
   mailOptions.forEach(mail => {
     transporter.sendMail(mail, function(err, info) {
       if (err) {
@@ -116,7 +113,12 @@ router.post("/", (req, res) => {
           .status(500)
           .json({ message: "Something went wrong, please try again later" });
       } else {
-        res.status(201).json({ message: "Email successfully sent" });
+        emailsSent++;
+        if (emailsSent === mailOptions.length) {
+          setTimeout(() => {
+            res.status(201).json({ message: "Email successfully sent" });
+          }, 500);
+        }
       }
     });
   });
