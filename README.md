@@ -1,6 +1,6 @@
 # Znayti Server Side
 
-Znayti will help Russian speaking users locate Russian speaking businesses so that they will be able to communicate in a language that they understand easier
+Znayti will help Russian speaking users locate businesses that have so that they will be able to communicate in a language that they understand easier.
 
 ## Motivation
 
@@ -16,7 +16,9 @@ You will be able to select the general area your searching for by city name or z
 
 ## Demo
 
-[Coming Soon]()
+[Demo](https://safe-shore-26648.herokuapp.com/)
+Demo Username: ffffffffff
+Demo Password: ffffffffff
 
 ## Tech Stack
 * React
@@ -32,6 +34,7 @@ You will be able to select the general area your searching for by city name or z
 
 ### Testing
 
-* Mocha
+* Enzyme
 * Chai
 * Chai-http
+* Mocha
