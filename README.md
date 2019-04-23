@@ -17,8 +17,10 @@ You will be able to select the general area your searching for by city name or z
 ## Demo
 
 [Demo](https://safe-shore-26648.herokuapp.com/)
-Demo Username: ffffffffff
-Demo Password: ffffffffff
+
+[Demo Admin Login](https://safe-shore-26648.herokuapp.com/bigboss/login)
+Demo Admin Username: ffffffffff
+Demo Admin Password: ffffffffff
 
 ## Screenshots
 
