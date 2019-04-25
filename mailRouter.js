@@ -41,7 +41,9 @@ router.post("/", (req, res) => {
       ? `New Submission ${req.body.businessToAdd}`
       : `New Edit Request For ${req.body.businessToEdit}`;
 
-  let comment = req.body.comment ? req.body.comment : null;
+  let comment = req.body.comment
+    ? req.body.comment
+    : "No additional comments provided.";
 
   let userIntroHtml =
     req.body.formID === "add"
@@ -98,7 +100,7 @@ router.post("/", (req, res) => {
         `<h1>${adminIntroHtml}</h1><p>${submissionDetails}<br />` +
         (req.body.formID === "edit"
           ? `Business ID: ${req.body.businessID}`
-          : null) +
+          : "") +
         `</p>`
     }
   ];
