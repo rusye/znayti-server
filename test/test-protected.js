@@ -16,6 +16,8 @@ const expect = chai.expect;
 chai.use(chaiHttp);
 
 describe('Protected endpoint', function () {
+  this.timeout(15000);
+  
   const username = 'exampleUser';
   const password = 'examplePass';
   const firstName = 'Example';
